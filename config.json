@@ -1,0 +1,63 @@
+{	
+	"training":
+		{		
+			"optimizer":  							
+			{
+				"name": "sgd",							
+				"lr": 0.001,
+				"momentum": 0.9								
+			},
+			"lr_scheduler":  							
+			{
+				"name": "ReduceLROnPlateau",							
+				"mode": "min",
+				"factor": 0.1,
+				"patience": 10,
+				"verbose": "True",
+				"threshold": 1e-4,
+				"threshold_mode": "rel",
+				"cooldown": 0,
+				"min_lr": 0,
+				"eps": 1e-8
+			},
+			"augmentation":  							
+			{
+				"train":
+				{
+					"RandomResizedCrop":
+					{					
+					"size": 224,
+					"scale": [0.4, 1.0],
+					"ratio": [0.75, 1.33]
+					},
+					"RandomHorizontalFlip":
+					{
+					"p": 0.5
+					},					
+					"Normalize":
+					{
+					"mean": [0.485, 0.456, 0.406],
+					"std": [0.229, 0.224, 0.225]
+					}					
+				},	
+				"val":
+				{
+					"Resize":
+					{
+					"size": 224,
+					"interpolatation": 2
+					},
+					"CenterCrop":
+					{
+					"size": 224
+					},					
+					"Normalize":
+					{
+					"mean": [0.485, 0.456, 0.406],
+					"std": [0.229, 0.224, 0.225]
+					}					
+				}						
+								
+            }
+        }	
+}
