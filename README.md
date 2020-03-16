@@ -50,6 +50,14 @@ The custom dataset must contain training and validation images.
          |    ├──classname_2
          |    |   └──...
          |    ├──...
+         ├── test (Optional)
+         |    ├──classname_1
+         |    |   └──image_1.png
+         |    |   └──image_2.png
+         |    |   └──...
+         |    ├──classname_2
+         |    |   └──...
+         |    ├──...
          
 
 ## Configuration through config.json
@@ -173,11 +181,13 @@ The following settings can be configured through the config.json:
 
 
 ## To Do:
-- [ ] Requirements for linux, macos
+- [ ] Prediction routine (no labels available)
+- [ ] Convert print() to logging
 - [ ] Save args and config in Outputdir
-- [ ] Test routine
 - [ ] Criterion settings in config file
 - [ ] Use docker for project setup
+- [x] Requirements for linux
+- [x] Test routine
 - [x] Outputdir settings in config file
 - [x] Scheduler settings in config file
 - [x] Add config file
