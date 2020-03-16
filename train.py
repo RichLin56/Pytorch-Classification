@@ -17,7 +17,6 @@ import models
 import utils.builder
 import utils.misc as misc
 
-
 ############################################################
 ######################### Settings #########################
 ############################################################
@@ -48,7 +47,6 @@ use_pretrained = args.use_pretrained
 checkpoint = args.checkpoint
 feature_extract = args.feature_extract  # False: finetune the whole model, True: update the last fc layer params
 
-
 assert os.path.isfile(config_file), '{} does not exist'.format(config_file)
 cfg = misc.load_config_json(config_file, config_group="training")
 
@@ -58,8 +56,6 @@ if output_dir:
 else:
     output_dir = os.path.join(os.getcwd(), "Training_{}".format(misc.time_now()))
     os.makedirs(output_dir, exist_ok=True)
-
-
 
 ###########################################################
 ######################### Methods #########################
@@ -173,6 +169,7 @@ else:
     model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print('Setting up device, using {}...'.format(device))
 model_ft = model_ft.to(device)
 
 ################################################################
@@ -180,11 +177,11 @@ model_ft = model_ft.to(device)
 ################################################################
 
 aug_train = [utils.builder.AugmentationBuilder(group_name=key, group_cfg=cfg['augmentation']['train'][key], 
-                                                                  module=transforms).build() 
+                                               module=transforms).build() 
              for key in cfg['augmentation']['train'].keys()]
 
 if 'Normalize' in cfg['augmentation']['train'].keys():
-    assert list(cfg['augmentation']['train'].keys()).index('Normalize') == len(cfg['augmentation']['train'].keys()) - 1, 'Normalize must be last step from augmentations!'  
+    assert list(cfg['augmentation']['train'].keys()).index('Normalize') == len(cfg['augmentation']['train'].keys()) - 1, 'Normalize must be last step of augmentations!'  
     aug_train.insert(-1, transforms.ToTensor())
 else:
     aug_train.append(transforms.ToTensor())
@@ -193,7 +190,7 @@ aug_val = [utils.builder.AugmentationBuilder(group_name=key, group_cfg=cfg['augm
                                              module=transforms).build() 
            for key in cfg['augmentation']['val'].keys()]
 if 'Normalize' in cfg['augmentation']['val'].keys():
-    assert list(cfg['augmentation']['val'].keys()).index('Normalize') == len(cfg['augmentation']['val'].keys()) - 1, 'Normalize must be last step from augmentations!'  
+    assert list(cfg['augmentation']['val'].keys()).index('Normalize') == len(cfg['augmentation']['val'].keys()) - 1, 'Normalize must be last step of augmentations!'  
     aug_val.insert(-1, transforms.ToTensor())
 else:
     aug_val.append(transforms.ToTensor())
