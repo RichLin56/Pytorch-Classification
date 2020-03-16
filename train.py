@@ -28,7 +28,7 @@ parser.add_argument("-n", "--num_classes", type=int ,help="Number of classes for
 parser.add_argument("-b", "--batch_size", type=int , help="Batch size for training.", required=True)
 parser.add_argument("-e", "--num_epochs", type=int , help="Number of epochs for training.", required=True)
 parser.add_argument("-o", "--output_dir", type=str , help="[Optional] Directory where output (model, log, config) data is stored. Directory will be created.", default=None)
-parser.add_argument("-c", "--config_file", type=str, help="[Optional] Path to the .json config file.", default='config.json')
+parser.add_argument("-c", "--config_file", type=str, help="[Optional] Path to the .json config file.", default='train_config.json')
 parser.add_argument("-pt", "--use_pretrained", type=bool, help="[Optional] Use a model pretrained on ImageNet 1000.", default=True)
 parser.add_argument("-cp", "--checkpoint", type=str, help="[Optional] Path to model ckeckpoint to continue training from an existing set of weights.", default=None)
 parser.add_argument("-ft", "--feature_extract", type=bool , help="[Optional] Use for feature extraction == freeze layers (True) or finetuning (False).", default=False)
