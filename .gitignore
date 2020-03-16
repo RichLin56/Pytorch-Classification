@@ -130,3 +130,6 @@ dmypy.json
 
 # Misc
 _config.yml
+.vscode/
+Training_*/
+__pycache__/
