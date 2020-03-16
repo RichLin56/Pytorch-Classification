@@ -61,7 +61,7 @@ else:
 ######################### Methods #########################
 ###########################################################
 
-def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler, summary_writer, output_dir, is_inception=False):
+def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler, summary_writer, device, output_dir, is_inception=False):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -241,7 +241,7 @@ os.makedirs(outdir_tensorboard, exist_ok=True)
 
 summary_writer = SummaryWriter(outdir_tensorboard)    
 model_ft = train_model(model_ft, dataloaders_dict, criterion, optimizer, num_epochs, 
-                       lr_scheduler, summary_writer, output_dir, is_inception=(model_name=="inception"))
+                       lr_scheduler, summary_writer, device, output_dir, is_inception=(model_name=="inception"))
 summary_writer.close()
 torch.save(copy.deepcopy(model_ft.state_dict()), os.path.join(output_dir, "{}_state_dict.pth.tar".format(model_name)))
 os.remove(os.path.join(output_dir, "__best_state_dict.pth.tar"))

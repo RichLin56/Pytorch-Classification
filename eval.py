@@ -16,7 +16,6 @@ import models
 import utils.builder
 import utils.misc as misc
 
-
 ############################################################
 ######################### Settings #########################
 ############################################################
@@ -53,7 +52,7 @@ else:
 ######################### Methods #########################
 ###########################################################
 
-def eval_model(model, dataloaders: dict, output_dir):
+def eval_model(model, dataloaders: dict, device, output_dir):
     since = time.time()
     phase = 'test'
     model.eval()   # Set model to evaluate mode
@@ -127,4 +126,4 @@ dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size
 ######################### Evalutation #####################
 ###########################################################
 
-eval_model(model_ft, dataloaders_dict, None)
+eval_model(model_ft, dataloaders_dict, device=device, output_dir=output_dir)
