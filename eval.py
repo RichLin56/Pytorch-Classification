@@ -1,5 +1,20 @@
 #!/usr/bin/python
 import argparse
+import copy
+import os
+import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
+from torchvision import datasets, models, transforms
+
+import models
+import utils.builder
+import utils.misc as misc
 
 
 ############################################################
@@ -38,9 +53,9 @@ else:
 ######################### Methods #########################
 ###########################################################
 
-def eval_model(model, dataloader, output_dir):
+def eval_model(model, dataloaders: dict, output_dir):
     since = time.time()
-
+    phase = 'test'
     model.eval()   # Set model to evaluate mode
 
     running_corrects = 0
@@ -71,16 +86,14 @@ def eval_model(model, dataloader, output_dir):
         print('{} - {}: {:.2f}%'.format(phase, label, class_acc_dict[label]*100))
     print()
     time_elapsed = time.time() - since
-    print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
-    
+    print('Evaluation complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
 #########################################################
 ######################### Model #########################
 #########################################################
 
 assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
-model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=True)
+model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
 model_ft.load_state_dict(torch.load(checkpoint))
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -100,7 +113,7 @@ else:
     aug_val.append(transforms.ToTensor())
 
 data_transforms = {
-    'val': transforms.Compose(aug_val)
+    'test': transforms.Compose(aug_val)
     }
 
 ##############################################################
@@ -114,5 +127,4 @@ dataloaders_dict = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size
 ######################### Evalutation #####################
 ###########################################################
 
-eval_model(model_ft)
-
+eval_model(model_ft, dataloaders_dict, None)
