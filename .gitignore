@@ -132,4 +132,6 @@ dmypy.json
 _config.yml
 .vscode/
 Training_*/
+Evaluation_*/
+Prediction_*/
 __pycache__/
