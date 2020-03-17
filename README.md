@@ -50,6 +50,8 @@ The custom dataset must contain training and validation images.
          |    ├──classname_2
          |    |   └──...
          |    ├──...
+         |        
+         |  
          ├── test (Optional)
          |    ├──classname_1
          |    |   └──image_1.png
