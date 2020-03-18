@@ -8,27 +8,11 @@ Using [conda](https://docs.conda.io/en/latest/miniconda.html) for managing virtu
     $ cd path/to/Pytorch-Classification/
     $ conda create -n pytorch_cls python==3.7
     $ activate pytorch_cls
-    $ pip install -r requirements_windows.txt
-
-## Train
-    $ cd path/to/Pytorch-Classification/
-    $ activate pytorch_cls
-    $ python train.py [-h] [-model MODEL_ARCHITECTURE] 
-                      [-data DATA_DIR]
-                      [-n NUM_CLASSES] 
-                      [-b BATCH_SIZE] 
-                      [-e NUM_EPOCHS]
-                      [-o OUTPUT_DIR]
-                      [-c CONFIG_FILE]
-                      [-pt USE_PRETRAINED]
-                      [-cp CHECKPOINT]
-                      [-ft FEATURE_EXTRACT]
+    $ pip install -r requirements_windows.txt  
     
-    
-        
 
 ## Custom dataset
-The custom dataset must contain training and validation images.
+The custom dataset must contain training and validation images. If a testset is available it should be next to 'train' and 'val' folders as 'test'.
 #### Dataset structure
                     
         dataset           # path:  /path/to/dataset
@@ -61,9 +45,22 @@ The custom dataset must contain training and validation images.
          |    |   └──...
          |    ├──...
          
-
-## Configuration through config.json
-The following settings can be configured through the config.json:
+## Train
+    $ cd path/to/Pytorch-Classification/
+    $ activate pytorch_cls
+    $ python train.py [-h] [-model MODEL_ARCHITECTURE] 
+                      [-data DATA_DIR]
+                      [-n NUM_CLASSES] 
+                      [-b BATCH_SIZE] 
+                      [-e NUM_EPOCHS]
+                      [-o OUTPUT_DIR]
+                      [-c CONFIG_FILE]
+                      [-pt USE_PRETRAINED]
+                      [-cp CHECKPOINT]
+                      [-ft FEATURE_EXTRACT]
+                      
+## Configuration through train_config.json
+The following settings for training can be configured through the train_config.json:
 - **Optimizer**
   - All Optimizers from [torch.optim](https://pytorch.org/docs/stable/optim.html#algorithms) available
   - Parameters as dictionary keys & values (`see below for example in config.json` )
@@ -72,10 +69,10 @@ The following settings can be configured through the config.json:
   - Parameters as dictionary keys & values (`see below for example in config.json` )
 - **Augmentation**
   - All Augmentation techniques from [torchvision.transforms](https://pytorch.org/docs/stable/torchvision/transforms.html) available
-  - Transformations are executed from top to bottom (`see below for example in config.json` )
+  - Transformations are executed from top to bottom (`see below for example in train_config.json` )
 
 
-#### Example config.json
+#### Example train_config.json
     {	
     	"training":
     		{		
@@ -146,6 +143,53 @@ The following settings can be configured through the config.json:
     
 ![Tensorboard](README/tensorboard.png)
 
+
+## Evaluate Training with Testset
+    $ cd path/to/Pytorch-Classification/
+    $ activate pytorch_cls
+    $ python eval.py [-h] [-model MODEL_ARCHITECTURE] 
+                      [-data DATA_DIR]
+                      [-n NUM_CLASSES] 
+                      [-cp CHECKPOINT]
+                      [-o OUTPUT_DIR]
+                      [-c CONFIG_FILE]
+                      
+## Configuration through eval_config.json
+The following settings for evaluation with a testset can be configured through the eval_config.json:
+- **Augmentation**
+  - You should use the same settings here as in your train_config.json for augmentation during validation 
+  - All Augmentation techniques from [torchvision.transforms](https://pytorch.org/docs/stable/torchvision/transforms.html) available
+  - Transformations are executed from top to bottom (`see below for example in eval_config.json` )
+                      
+#### Example eval_config.json               
+    {	
+        "evaluation":
+            {			
+                "augmentation":  							
+                {	
+                    "val":
+                    {
+                        "Resize":
+                        {
+                        "size": 224,
+                        "interpolatation": 2
+                        },
+                        "CenterCrop":
+                        {
+                        "size": 224
+                        },					
+                        "Normalize":
+                        {
+                        "mean": [0.485, 0.456, 0.406],
+                        "std": [0.229, 0.224, 0.225]
+                        }					
+                    }				
+
+                }
+            }	
+    }
+
+
 ### Classification-Performances of the implemented models on ImageNet
 
 | Network | Top-1 error | Top-5 error | # Params |
@@ -180,7 +224,6 @@ The following settings can be configured through the config.json:
 |efficientnet-b5                  | 16.7|           3.3| 30M   |
 |efficientnet-b6                  | 16.0|           3.2| 43M   |
 |efficientnet-b7                  | 15.6|           2.9| 66M   |
-
 
 ## To Do:
 - [ ] Prediction routine (no labels available)
