@@ -1,5 +1,6 @@
 ## Requirements
 #### Python >= 3.7
+#### CUDA Toolkit 10.1
 
 #### Installation
 Using [conda](https://docs.conda.io/en/latest/miniconda.html) for managing virtual environments.
