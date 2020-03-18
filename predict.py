@@ -27,7 +27,7 @@ parser.add_argument("-data", "--data", type=str, help="Path to an image or to a 
 parser.add_argument("-n", "--num_classes", type=int ,help="Number of classes for classification.", required=True)
 parser.add_argument("-cp", "--checkpoint", type=str, help="[Optional] Path to model ckeckpoint which will evaluated.")
 parser.add_argument("-ext", "--extension", type=str, help="[Optional] Extension of input images.", default="")
-parser.add_argument("-c", "--config_file", type=str, help="[Optional] Path to the .json config file.", default='pred_config.json')
+parser.add_argument("-c", "--config_file", type=str, help="[Optional] Path to the .json config file.", default='predict_config.json')
 parser.add_argument("-o", "--output_dir", type=str , help="[Optional] Directory where output (model, log, config) data is stored. Directory will be created.", default=None)
 parser.add_argument("-gpu", "--use_gpu", help="[Optional] Usage of CPU/GPU.", default=False, action='store_true')
 args = parser.parse_args()
