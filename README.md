@@ -212,7 +212,7 @@ The following settings for evaluation with a testset can be configured through t
   - All Augmentation techniques from [torchvision.transforms](https://pytorch.org/docs/stable/torchvision/transforms.html) available
   - Transformations are executed from top to bottom (`see below for example in predict_config.json` )
 
-#### Example eval_config.json   
+#### Example predict_config.json   
     {	
         "prediction":
             {	
