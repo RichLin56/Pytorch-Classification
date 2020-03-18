@@ -283,11 +283,12 @@ The following settings for evaluation with a testset can be configured through t
 |efficientnet-b7                  | 15.6|           2.9| 66M   |
 
 ## To Do:
-- [ ] Prediction routine (no labels available)
+
 - [ ] Convert print() to logging
 - [ ] Save args and config in Outputdir
 - [ ] Criterion settings in config file
 - [ ] Use docker for project setup
+- [x] Prediction routine (no labels available)
 - [x] Requirements for linux
 - [x] Test routine
 - [x] Outputdir settings in config file
