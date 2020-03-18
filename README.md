@@ -12,7 +12,7 @@ Using [conda](https://docs.conda.io/en/latest/miniconda.html) for managing virtu
     
 
 ## Custom dataset
-The custom dataset must contain training and validation images. If a testset is available it should be next to 'train' and 'val' folders as 'test'.
+The custom dataset must contain training and validation images. If a testset is available it should be next to `train` and `val` folders as `test`.
 #### Dataset structure
                     
         dataset           # path:  /path/to/dataset
