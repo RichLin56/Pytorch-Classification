@@ -152,12 +152,12 @@ The following settings for training can be configured through the train_config.j
                       [-n NUM_CLASSES] 
                       [-cp CHECKPOINT]
                       [-o OUTPUT_DIR]
-                      [-c CONFIG_FILE]
-                      
+                      [-c CONFIG_FILE]   
+      
 ## Configuration through eval_config.json
 The following settings for evaluation with a testset can be configured through the eval_config.json:
 - **Augmentation**
-  - You should use the same settings here as in your train_config.json for augmentation during validation 
+  - You should use the same settings here as in your eval_config.json
   - All Augmentation techniques from [torchvision.transforms](https://pytorch.org/docs/stable/torchvision/transforms.html) available
   - Transformations are executed from top to bottom (`see below for example in eval_config.json` )
                       
@@ -188,6 +188,63 @@ The following settings for evaluation with a testset can be configured through t
                 }
             }	
     }
+    
+
+## Predict on new images
+    $ cd path/to/Pytorch-Classification/
+    $ activate pytorch_cls
+    $ python predict.py [-h] [-model MODEL_ARCHITECTURE] 
+                        [-data DATA_DIR]
+                        [-n NUM_CLASSES] 
+                        [-cp CHECKPOINT]
+                        [-ext EXTENSION]
+                        [-c CONFIG_FILE]
+                        [-o OUTPUT_DIR]
+                        [-gpu USE_GPU]
+                        
+## Configuration through predict_config.json
+The following settings for evaluation with a testset can be configured through the predict_config.json:
+- **save_images**
+  - Save all predictions into output_dir
+- **class_to_label**
+- **Augmentation**
+  - Use the same settings here as in train_config.json 
+  - All Augmentation techniques from [torchvision.transforms](https://pytorch.org/docs/stable/torchvision/transforms.html) available
+  - Transformations are executed from top to bottom (`see below for example in predict_config.json` )
+
+#### Example eval_config.json   
+    {	
+        "prediction":
+            {	
+                "save_images": "True",
+                "class_to_label":
+                {
+                    "0" : "ants",
+                    "1" : "bees"
+                },		
+                "augmentation":  							
+                {	
+                    "val":
+                    {
+                        "Resize":
+                        {
+                        "size": 224,
+                        "interpolatation": 2
+                        },
+                        "CenterCrop":
+                        {
+                        "size": 224
+                        },					
+                        "Normalize":
+                        {
+                        "mean": [0.485, 0.456, 0.406],
+                        "std": [0.229, 0.224, 0.225]
+                        }					
+                    }										
+                }
+            }	
+    }
+                        
 
 
 ### Classification-Performances of the implemented models on ImageNet
