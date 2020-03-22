@@ -144,7 +144,7 @@ The following settings for training can be configured through the train_config.j
 ![Tensorboard](README/tensorboard.png)
 
 
-## Evaluate Training with Testset
+## Evaluate Training afterwards with Testset
     $ cd path/to/Pytorch-Classification/
     $ activate pytorch_cls
     $ python eval.py [-h] [-model MODEL_ARCHITECTURE] 
