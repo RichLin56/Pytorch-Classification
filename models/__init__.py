@@ -96,7 +96,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs, num_classes)
-        input_size = 224
     # Resnexts
     elif "resnext" in model_name:
         if model_name == "resnext50":
@@ -116,7 +115,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs, num_classes)
-        input_size = 224 
     # Densenets
     elif "densenet" in model_name:
         if model_name == "densenet121":
@@ -146,7 +144,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.classifier.in_features
         model_ft.classifier = nn.Linear(num_ftrs, num_classes)
-        input_size = 224
         #MNASNet V1.0
     # MNASnets
     elif "mnasnet" in model_name:
@@ -177,7 +174,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.classifier[1].in_features
         model_ft.classifier[1] = nn.Linear(num_ftrs,num_classes)
-        input_size = 224
     # Shufflenets
     elif "shufflenet" in model_name:
         if model_name == "shufflenet_x0_5":
@@ -207,7 +203,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs, num_classes)
-        input_size = 224 
     elif "efficientnet" in model_name:
         if model_name in __model_names["efficientnet"]:
             """EfficientNetb0
@@ -223,7 +218,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft._fc.in_features
         model_ft._fc = nn.Linear(num_ftrs, num_classes)
-        input_size = 224 
     # Squeezenet V1.1
     elif model_name == "squeezenet":
         """ Squeezenet1.1
@@ -233,7 +227,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         model_ft.classifier[1] = nn.Conv2d(512, num_classes, kernel_size=(1,1), stride=(1,1))
         model_ft.num_classes = num_classes
-        input_size = 224
     # Inception V3
     elif model_name == "inception":
         """ Inception v3
@@ -247,7 +240,6 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         # Handle the primary net
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs,num_classes)
-        input_size = 299
     # Mobilenet V2
     elif model_name == "mobilenet":
         """ MobileNetV2
@@ -257,13 +249,12 @@ def initialize_model(model_name, num_classes, feature_extract, use_pretrained=Tr
         set_parameter_requires_grad(model_ft, feature_extract)
         num_ftrs = model_ft.classifier[1].in_features
         model_ft.classifier[1] = nn.Linear(num_ftrs,num_classes)
-        input_size = 224
     # model_name not in model zoo
     else:
         print("Invalid model name, chose one of: {}.".format(pytorch_modelzoo.MODEL_NAMES))
         print("exiting...")
         exit()
-    return model_ft, input_size
+    return model_ft
 
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
