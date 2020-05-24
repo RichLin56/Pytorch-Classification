@@ -14,6 +14,7 @@ from torchvision import datasets, models, transforms
 
 import models
 import utils.builder
+import utils.metrics as metrics
 import utils.misc as misc
 
 ############################################################
@@ -57,9 +58,7 @@ def eval_model(model, dataloaders: dict, device, output_dir):
     phase = 'test'
     model.eval()   # Set model to evaluate mode
 
-    running_corrects = 0
-    num_classes = len(dataloaders[phase].dataset.classes)
-    running_corrects_per_class = torch.zeros(num_classes, num_classes)
+    confusion_matrix = torch.zeros(num_classes, num_classes)
 
     # Iterate over data.
     for inputs, labels in dataloaders[phase]:
@@ -67,23 +66,17 @@ def eval_model(model, dataloaders: dict, device, output_dir):
         labels = labels.to(device)
         
         outputs = model(inputs)
-        _, preds = torch.max(outputs, 1)
+        outputs_softmax = nn.Softmax(dim=1)(outputs)
+        preds_softmax, preds = torch.max(outputs_softmax, 1)
 
         # Batch statistics
-        running_corrects += torch.sum(preds == labels.data)
         for t, p in zip(labels.view(-1), preds.view(-1)):
-            running_corrects_per_class[t.long(), p.long()] += 1
+            confusion_matrix[t.long(), p.long()] += 1
         
-    # Epoch statistics
-    epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
-    epoch_acc_per_class = running_corrects_per_class.diag()/running_corrects_per_class.sum(1)
-    print('{} - Acc: {:.4f}'.format(phase, epoch_acc))
-    print('{} - Acc per Class:'.format(phase))
-    class_acc_dict = {}
-    for i, label in enumerate(dataloaders[phase].dataset.class_to_idx):
-        class_acc_dict[label] = epoch_acc_per_class[i].item()
-        print('{} - {}: {:.2f}%'.format(phase, label, class_acc_dict[label]*100))
-    print()
+    # Statistics
+    metrics.plot_confusion_matrix(confusion_matrix.numpy(), dataloaders[phase].dataset.class_to_idx, normalize=True, output_dir= output_dir, plot=False)
+    metrics.plot_confusion_matrix(confusion_matrix.numpy(), dataloaders[phase].dataset.class_to_idx, normalize=False, output_dir= output_dir, plot=False)
+    print(metrics.create_classification_report(confusion_matrix.numpy(), dataloaders[phase].dataset.class_to_idx))
     time_elapsed = time.time() - since
     print('Evaluation complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
@@ -92,7 +85,7 @@ def eval_model(model, dataloaders: dict, device, output_dir):
 #########################################################
 
 assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
-model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
+model_ft = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
 model_ft.load_state_dict(torch.load(checkpoint))
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
