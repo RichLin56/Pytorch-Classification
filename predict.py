@@ -74,13 +74,15 @@ def pred_model(model, images: list, class_to_label: dict, data_transforms: dict,
 
     for image_path in images:
         image = Image.open(image_path)
+        image = image.convert("RGB")
         inputs = trafo(image)
         inputs = inputs.to(device)       
         inputs = inputs.unsqueeze(0)
         outputs = model(inputs)
-        _, preds = torch.max(outputs, 1)
+        outputs_softmax = nn.Softmax(dim=1)(outputs)
+        preds_softmax, preds = torch.max(outputs_softmax, 1)
 
-        image.save(os.path.join(output_dir,  "{}_{}".format(class_to_label[str(preds.item())], os.path.basename(image_path))))
+        image.save(os.path.join(output_dir,  "{}_{}_{}".format(class_to_label[str(preds.item())], str(preds_softmax.item()), os.path.basename(image_path))))
     print()
     time_elapsed = time.time() - since
     print('Prediction complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -91,7 +93,7 @@ def pred_model(model, images: list, class_to_label: dict, data_transforms: dict,
 #########################################################
 
 assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
-model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
+model_ft = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
 model_ft.load_state_dict(torch.load(checkpoint))
 
 device = torch.device("cpu")
