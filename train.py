@@ -15,6 +15,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 import models
 import utils.builder
+import utils.metrics as metrics
 import utils.misc as misc
 
 ############################################################
@@ -66,6 +67,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+    best_loss = 100000
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -79,9 +81,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
                 model.eval()   # Set model to evaluate mode
 
             running_loss = 0.0
-            running_corrects = 0
             num_classes = len(dataloaders[phase].dataset.classes)
-            running_corrects_per_class = torch.zeros(num_classes, num_classes)
+            confusion_matrix = torch.zeros(num_classes, num_classes)
 
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
@@ -107,8 +108,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
                     else:
                         outputs = model(inputs)
                         loss = criterion(outputs, labels)
-
-                    _, preds = torch.max(outputs, 1)
+                    outputs_softmax = nn.Softmax(dim=1)(outputs)
+                    preds_softmax, preds = torch.max(outputs_softmax, 1)
 
                     # Backward + optimize only if in training phase
                     if phase == 'train':
@@ -117,33 +118,32 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
 
                 # Batch statistics
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+
                 for t, p in zip(labels.view(-1), preds.view(-1)):
-                    running_corrects_per_class[t.long(), p.long()] += 1
+                    confusion_matrix[t.long(), p.long()] += 1
+
             # Epoch statistics
             epoch_loss = running_loss / len(dataloaders[phase].dataset)
-            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
-            epoch_acc_per_class = running_corrects_per_class.diag()/running_corrects_per_class.sum(1)
-            print('{} - Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
-            print('{} - Acc per Class:'.format(phase))
-            class_acc_dict = {}
-            for i, label in enumerate(dataloaders[phase].dataset.class_to_idx):
-                class_acc_dict[label] = epoch_acc_per_class[i].item()
-                print('{} - {}: {:.2f}%'.format(phase, label, class_acc_dict[label]*100))
+            print("phase[{}] Loss:\t {:4f}".format(phase, epoch_loss))
+
             # Tensorboard logging
             if summary_writer:
-                summary_writer.add_scalar('Loss/{}'.format(phase), epoch_loss, epoch)                
-                summary_writer.add_scalar('Accuracy/{}'.format(phase), epoch_acc, epoch)
-                summary_writer.add_scalars('Accuary per Class/{}'.format(phase), class_acc_dict, epoch)
+                summary_writer.add_scalar('Loss/{}'.format(phase), epoch_loss, epoch)    
+                #TODO: Log Prec, Recall, ... to Tensorboard            
+                #summary_writer.add_scalar('Accuracy/{}'.format(phase), epoch_acc, epoch)
+                #summary_writer.add_scalars('Accuary per Class/{}'.format(phase), class_acc_dict, epoch)
                 if phase == 'val':
                     summary_writer.add_scalar('LR', optimizer.param_groups[0]['lr'], epoch)
+
             # Scheduler and Model saving
             if phase == 'val':
+                print("phase[{}] Classification Report:".format(phase))
+                print(metrics.create_classification_report(confusion_matrix.numpy(), dataloaders[phase].dataset.class_to_idx))
                 if scheduler:
                     summary_writer.add_scalar('LR/{}'.format(phase), optimizer.param_groups[0]['lr'], epoch)
                     scheduler.step(epoch_loss)
-                if epoch_acc > best_acc:
-                    best_acc = epoch_acc
+                if epoch_loss < best_loss:
+                    best_loss = epoch_loss
                     best_model_wts = copy.deepcopy(model.state_dict())
                     torch.save(best_model_wts, os.path.join(output_dir, "__best_state_dict.pth.tar"))
 
@@ -151,7 +151,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
+    print('Best val Loss: {:4f}'.format(best_loss))
 
     # Load best model weights
     model.load_state_dict(best_model_wts)
@@ -163,10 +163,10 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
 
 if checkpoint:
     assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
-    model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
+    model_ft = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
     model_ft.load_state_dict(torch.load(checkpoint))
 else:
-    model_ft, input_size = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
+    model_ft = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print('Setting up device, using {}...'.format(device))
