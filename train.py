@@ -160,16 +160,16 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, scheduler,
 #########################################################
 ######################### Model #########################
 #########################################################
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print('Setting up device, using {}...'.format(device))
 
 if checkpoint:
     assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
     model_ft = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
-    model_ft.load_state_dict(torch.load(checkpoint))
+    model_ft.load_state_dict(torch.load(checkpoint, map_location=device))
 else:
     model_ft = models.initialize_model(model_name, num_classes, feature_extract, use_pretrained=use_pretrained)
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('Setting up device, using {}...'.format(device))
 model_ft = model_ft.to(device)
 
 ################################################################

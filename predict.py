@@ -91,14 +91,14 @@ def pred_model(model, images: list, class_to_label: dict, data_transforms: dict,
 #########################################################
 ######################### Model #########################
 #########################################################
-
-assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
-model_ft = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
-model_ft.load_state_dict(torch.load(checkpoint))
-
 device = torch.device("cpu")
 if use_gpu:
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print('Setting up device, using {}...'.format(device))
+
+assert os.path.isfile(checkpoint), '{} does not exist'.format(checkpoint)
+model_ft = models.initialize_model(model_name, num_classes, feature_extract=True, use_pretrained=True)
+model_ft.load_state_dict(torch.load(checkpoint, map_location=device))
 
 model_ft = model_ft.to(device)
 
