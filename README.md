@@ -4,7 +4,7 @@
 #### Installation
 Using [conda](https://docs.conda.io/en/latest/miniconda.html) for managing virtual environments.
 
-    $ git clone https://github.com/RichLin56/Semantic-Segmentation.git
+    $ git clone https://github.com/RichLin56/Pytorch-Classification.git
     $ cd path/to/Pytorch-Classification/
     $ conda create -n pytorch_cls python==3.7
     $ activate pytorch_cls
